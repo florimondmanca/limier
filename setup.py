@@ -1,32 +1,24 @@
-# setuptools is a fully-featured, actively-maintained, and stable
-# library designed to facilitate packaging Python projects.
-# setup.py is the build script for setuptools.
-# It tells setuptools about your package (such as the name and version)
-# as well as which code files to include.
 # https://packaging.python.org/tutorials/packaging-projects/
 # https://setuptools.readthedocs.io/en/latest/
 
 import ast
-import io
 import re
 import os
-import sys
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup
 
 DEPENDENCIES = []
 EXCLUDE_FROM_PACKAGES = ["contrib", "docs", "tests*"]
 CURDIR = os.path.abspath(os.path.dirname(__file__))
 
-with io.open(os.path.join(CURDIR, "README.md"), "r", encoding="utf-8") as f:
+with open(os.path.join(CURDIR, "README.md"), "r") as f:
     README = f.read()
 
 
 def get_version() -> str:
-    main_file = os.path.join(CURDIR, "colon", "main.py")
     _version_re = re.compile(r"__version__\s+=\s+(?P<version>.*)")
-    with open(main_file, "r", encoding="utf8") as f:
-        match = _version_re.search(f.read())
-        version = match.group("version") if match is not None else '"unknown"'
+    with open(os.path.join(CURDIR, "colon", "__init__.py"), "r") as init:
+        match = _version_re.search(init.read())
+        version = match.group("version")
     return str(ast.literal_eval(version))
 
 
@@ -57,4 +49,3 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
 )
-
