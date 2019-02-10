@@ -29,3 +29,4 @@ ALIASES: Dict[Any, Converter] = {
     # Other
     range: Range(),
 }
+"""Default aliases that are registered when using :func:`Registry.default <colon.registry.Registry.default>`."""

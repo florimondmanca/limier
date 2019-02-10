@@ -36,8 +36,9 @@ Converter.identity = Identity()
 class Filter(Converter[T, T]):
     """Require that the inbound value passes a test.
 
-    # Parameters
-    test (callable):
+    Parameters
+    -----------
+    test : callable
         a function that should evaluate to `True` if the given value
         is valid, `False` otherwise.
     """
@@ -57,9 +58,10 @@ class Filter(Converter[T, T]):
 class Transform(Converter[T, V]):
     """Transform the inbound value.
 
-    # Parameters
-    transformation (callable):
-    exception_cls (class):
+    Parameters
+    ------------
+    transformation : callable
+    exception_cls : class
         The exception that `transformation` raises in case of an invalid
         value. Defaults to `ValueError`.
     """
@@ -85,8 +87,9 @@ class Transform(Converter[T, V]):
 class OneOf(Filter[T]):
     """Require that the inbound value is one among a given set.
 
-    # Parameters
-    *values (any):
+    Parameters
+    ----------
+    *values : any
         values which the inbound value must be one of.
         Must be hashable since a `set` is built out of
         them for faster `in` lookup.
@@ -107,14 +110,18 @@ class OneOf(Filter[T]):
 class Mapping(Converter[T, V]):
     """Convert map equivalent values to a normalized value.
 
-    # Example
-    ```python
-    Mapping({True: {"true", "True", "yes", "y", "1"}})
-    ```
-
-    # Parameters
-    mapping (dict):
+    Parameters
+    ----------
+    mapping : dict
         a dict mapping normalized values to strings that represent them.
+
+    Example
+    -------
+    >>> truths = Mapping({True: {"true", "True", "yes", "y", "1"}})
+    >>> truths("true")
+    True
+    >>> truths("sure")
+    ValueError
     """
 
     def __init__(self, mapping: Dict[V, Set[T]]):
@@ -133,12 +140,13 @@ class Mapping(Converter[T, V]):
 class Regex(Converter[str, V]):
     """Match based on a regular expression and convert the matched value.
 
-    # Parameters
-    pattern (str or re.Pattern):
+    Parameters
+    ----------
+    pattern : str or re.Pattern
         a regular expression pattern that is compiled for faster matching.
         Also accepted as a class attribute.
-    kwargs (any):
-        additional keyword arguments passed to `re.compile()`.
+    kwargs : any
+        additional keyword arguments passed to ``re.compile()``.
     """
 
     def __init__(self, pattern: Optional[Union[str, Pattern]] = None, **kwargs):
@@ -157,10 +165,12 @@ class Regex(Converter[str, V]):
         return self._pattern
 
     def convert(self, match: Match) -> V:  # pylint: disable=no-self-use
-        """Build the output value out of the `Match` object.
+        """Build the output value out of the ``re.Match`` object.
 
-        # Returns
-        value (any): the matched string by default.
+        Returns
+        -------
+        value : any
+            The matched string by default.
         """
         return match.string
 
@@ -174,9 +184,13 @@ class Regex(Converter[str, V]):
 
 
 class Range(Regex[range]):
-    """Build a Python `range` object from the inbound value.
+    """Build a Python ``range`` object from the inbound value.
 
-    Supported formats: `{min}:{max}`, `{min}..{max}`, `{min}...{max}`.
+    Supported formats:
+
+    - ``{min}:{max}``
+    - ``{min}..{max}``
+    - ``{min}...{max}``
     """
 
     pattern = re.compile(r"(\d+)(?:\.{2,3}|:)(\d+)")
