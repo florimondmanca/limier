@@ -15,7 +15,19 @@ from .typevars import T, U, V, W  # pylint: disable=unused-import
 
 
 class Converter(Generic[T, V]):  # pylint: disable=unsubscriptable-object
-    """Base converter interface."""
+    """Class-style definition of the base converter interface.
+
+    A converter is basically a callable that:
+    
+    1. Takes an input ``value``.
+    2. Converts it and raises ``ValueError`` in case any validation fails.
+    3. Returns the converted value.
+
+    The input and converted values do not have to be of the same type.
+
+    .. note::
+        Concrete subclasses should implement ``__call__(self, value)``.
+    """
 
     identity: "Identity"
 
@@ -24,7 +36,10 @@ class Converter(Generic[T, V]):  # pylint: disable=unsubscriptable-object
 
 
 class Identity(Converter[T, T]):
-    """The no-op converter that returns what it's given."""
+    """The no-op converter that returns what it's given.
+
+    This is typically used as a default when no other converter is available.
+    """
 
     def __call__(self, value: T) -> T:
         return value
@@ -34,29 +49,45 @@ Converter.identity = Identity()
 
 
 class Filter(Converter[T, T]):
-    """Require that the inbound value passes a test.
+    """Raise ``ValueError`` if ``test(value)`` evaluates to ``False``.
 
     Parameters
     -----------
     test : callable
         a function that should evaluate to `True` if the given value
         is valid, `False` otherwise.
+    
+    Example
+    -------
+    >>> f = Filter(str.islower)
+    >>> f("hello")
+    "hello"
+    >>> f("Hello")
+    ValueError: 'Hello' does not satisfy 'islower'
     """
 
     def __init__(self, test: Callable[[T], bool]):
         self.test = test
 
-    def get_message(self) -> str:
-        return "did not pass '{self.test.__name__}'"
+    def get_failure_message(self, value: T) -> str:
+        """The message to bundle with ``ValueError`` when the test failed."""
+        try:
+            return f"'{value}' does not satisfy '{self.test.__name__}'"
+        except AttributeError:
+            return str(value)
 
     def __call__(self, value: T) -> T:
         if not self.test(value):
-            raise ValueError(f"{self.get_message()}: '{value}'")
+            raise ValueError(self.get_failure_message(value))
         return value
 
 
 class Transform(Converter[T, V]):
-    """Transform the inbound value.
+    """Transform the inbound value using a function.
+
+    This is the simplest kind of converters which is typically used to wrap
+    a callable that may not always return ``ValueError`` when it fails to
+    process the input ``value``.
 
     Parameters
     ------------
@@ -64,6 +95,15 @@ class Transform(Converter[T, V]):
     exception_cls : class
         The exception that `transformation` raises in case of an invalid
         value. Defaults to `ValueError`.
+
+    Example
+    -------
+    >>> from functools import partial
+    >>> from_binary = Transform(partial(int, base=2))
+    >>> from_binary("10101")
+    42
+    >>> from_binary("1234")
+    ValueError: invalid literal for int() with base 2: '1234'
     """
 
     def __init__(
@@ -78,10 +118,7 @@ class Transform(Converter[T, V]):
         try:
             return self.transformation(value)
         except self.exception_cls as exc:
-            raise ValueError(
-                f"could not convert using {self.transformation.__name__}: "
-                f"'{value}'"
-            ) from exc
+            raise ValueError(str(exc)) from exc
 
 
 class OneOf(Filter[T]):
@@ -93,6 +130,14 @@ class OneOf(Filter[T]):
         values which the inbound value must be one of.
         Must be hashable since a `set` is built out of
         them for faster `in` lookup.
+    
+    Example
+    -------
+    >>> accepted_fruits = OneOf("apple", "orange", "strawberrie")
+    >>> accepted_fruits("apple")
+    "apple"
+    >>> accepted_fruits("watermelon")
+    ValueError: expected one of 'orange, apple', got 'watermelon'
     """
 
     def __init__(self, *values: T):
@@ -103,12 +148,13 @@ class OneOf(Filter[T]):
 
         super().__init__(test=test)
 
-    def get_message(self) -> str:
-        return f"expected one of of {', '.join(map(str, self.values))}"
+    def get_failure_message(self, value: T) -> str:
+        values = ", ".join(map(str, self.values))
+        return f"expected one of '{values}', got '{value}'"
 
 
 class Mapping(Converter[T, V]):
-    """Convert map equivalent values to a normalized value.
+    """Map equivalent values to a normalized value.
 
     Parameters
     ----------
@@ -121,7 +167,7 @@ class Mapping(Converter[T, V]):
     >>> truths("true")
     True
     >>> truths("sure")
-    ValueError
+    ValueError: 'sure' is not equivalent to any known value
     """
 
     def __init__(self, mapping: Dict[V, Set[T]]):
@@ -131,10 +177,7 @@ class Mapping(Converter[T, V]):
         for val, values in self.mapping.items():
             if value in values:
                 return val
-        raise ValueError(
-            "cannot interpret as one of "
-            f"{', '.join(map(str, self.mapping))}: '{value}'"
-        )
+        raise ValueError(f"'{value}' is not equivalent to any known value")
 
 
 class Regex(Converter[str, V]):
