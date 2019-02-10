@@ -76,21 +76,17 @@ def punctuate(
         if param.annotation is not Parameter.empty:
             kwargs_converters[name] = _registry.get(param.annotation)
 
-    def punctuated_args(args: Tuple) -> Tuple:
-        return tuple(
-            converter(value)
-            # Use `zip_longest` with `identity` as a fill value so that
-            # superfluous positional arguments are passed unchanged to
-            # `func` for failure.
-            for converter, value in zip_longest(
-                args_converters, args, fillvalue=Converter.identity
-            )
-            # This may be the case if `len(args) < len(args_converters)`
-            # (not enough positional arguments were given).
-            if value is not Converter.identity
-        )
+    def punctuated_args(args: Tuple):
+        fallbacks = iter(kwargs_converters.values())
+        for i, value in enumerate(args):
+            try:
+                converter = args_converters[i]
+            except IndexError:
+                converter = next(fallbacks, Converter.identity)
+            finally:
+                yield converter(value)
 
-    def puncuated_kwargs(kwargs: Dict) -> Dict:
+    def punctuated_kwargs(kwargs: Dict) -> Dict:
         return {
             name: kwargs_converters[name](value)
             for name, value in kwargs.items()
@@ -98,6 +94,6 @@ def punctuate(
 
     @wraps(func)
     def punctuated(*args: Any, **kwargs: Any) -> V:
-        return func(*punctuated_args(*args), **puncuated_kwargs(kwargs))
+        return func(*punctuated_args(args), **punctuated_kwargs(kwargs))
 
     return punctuated

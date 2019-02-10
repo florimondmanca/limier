@@ -8,6 +8,7 @@ pylint = "*"
 rope = "*"
 mypy = "*"
 sphinx = "*"
+pytest = "*"
 
 [packages]
 colon = {editable = true,path = "."}
