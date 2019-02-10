@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from .converters import Converter, Filter, Mapping, Range, Transform
 
-DEFAULT_CONVERTERS: Dict[Any, Converter] = {
+ALIASES: Dict[Any, Converter] = {
     # `str` filters
     **{
         func: Filter(func)
@@ -21,8 +21,8 @@ DEFAULT_CONVERTERS: Dict[Any, Converter] = {
     # Mappings
     bool: Mapping(
         {
-            True: {"true", "True", "yes", "1"},
-            False: {"false", "False", "no", "0"},
+            True: {"true", "True", "yes", "y", "1"},
+            False: {"false", "False", "no", "n", "0"},
         }
     ),
     None: Mapping({None: {"null", "none"}}),

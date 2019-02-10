@@ -1,24 +1,36 @@
 import re
 from typing import (
-    Generic,
-    Union,
     Callable,
-    Type,
     Dict,
-    Set,
+    Generic,
+    Match,
     Optional,
     Pattern,
-    Match,
+    Set,
+    Type,
+    Union,
 )
 
-from .typevars import T, V, U, W  # pylint: disable=unused-import
+from .typevars import T, U, V, W  # pylint: disable=unused-import
 
 
 class Converter(Generic[T, V]):  # pylint: disable=unsubscriptable-object
     """Base converter interface."""
 
+    identity: "Identity"
+
     def __call__(self, value: T) -> V:
         raise NotImplementedError
+
+
+class Identity(Converter[T, T]):
+    """The no-op converter that returns what it's given."""
+
+    def __call__(self, value: T) -> T:
+        return value
+
+
+Converter.identity = Identity()
 
 
 class Filter(Converter[T, T]):

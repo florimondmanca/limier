@@ -1,8 +1,8 @@
 from functools import reduce
 from typing import Any, Callable, Dict, Hashable, List, Union
 
+from .aliases import ALIASES
 from .converters import Converter, Transform
-from .defaults import DEFAULT_CONVERTERS
 from .typevars import T, V
 
 
@@ -16,9 +16,9 @@ class Registry:
         self._aliases: Dict[Any, Converter] = {}
 
     @classmethod
-    def from_defaults(cls) -> "Registry":
+    def default(cls) -> "Registry":
         registry = cls()
-        for alias, converter in DEFAULT_CONVERTERS.items():
+        for alias, converter in ALIASES.items():
             registry.register(alias, converter)
         return registry
 
