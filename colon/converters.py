@@ -6,7 +6,7 @@ from typing import (
     Match,
     Optional,
     Pattern,
-    Set,
+    Tuple,
     Type,
     Union,
 )
@@ -39,6 +39,12 @@ class Identity(Converter[T, T]):
     """The no-op converter that returns what it's given.
 
     This is typically used as a default when no other converter is available.
+
+    Example
+    -------
+    >>> same = Identity()
+    >>> same("hello")
+    "hello"
     """
 
     def __call__(self, value: T) -> T:
@@ -56,7 +62,7 @@ class Filter(Converter[T, T]):
     test : callable
         a function that should evaluate to `True` if the given value
         is valid, `False` otherwise.
-    
+
     Example
     -------
     >>> f = Filter(str.islower)
@@ -83,54 +89,55 @@ class Filter(Converter[T, T]):
 
 
 class Transform(Converter[T, V]):
-    """Transform the inbound value using a function.
+    """Transform the input value using a function.
 
-    This is the simplest kind of converters which is typically used to wrap
-    a callable that may not always return ``ValueError`` when it fails to
-    process the input ``value``.
+    This converter is typically used to wrap a callable that may not
+    always raise ``ValueError`` when it fails to process the input ``value``,
+    or in conjunction with ``functools.partial``.
 
     Parameters
     ------------
     transformation : callable
-    exception_cls : class
+    raised_if_invalid : class
         The exception that `transformation` raises in case of an invalid
         value. Defaults to `ValueError`.
 
     Example
     -------
-    >>> from functools import partial
-    >>> from_binary = Transform(partial(int, base=2))
-    >>> from_binary("10101")
+    >>> from decimal import Decimal, InvalidOperation
+    >>> to_decimal = Transform(Decimal, raised_if_invalid=InvalidOperation)
+    >>> to_decimal("1.5")
+    Decimal('1.5')
     42
-    >>> from_binary("1234")
-    ValueError: invalid literal for int() with base 2: '1234'
+    >>> to_decimal("oops")
+    ValueError: [<class 'decimal.ConversionSyntax'>]
     """
 
     def __init__(
         self,
         transformation: Callable[[T], V],
-        exception_cls: Type[BaseException] = ValueError,
+        raised_if_invalid: Type[BaseException] = ValueError,
     ):
         self.transformation = transformation
-        self.exception_cls = exception_cls
+        self.raised_if_invalid = raised_if_invalid
 
     def __call__(self, value: T) -> V:
         try:
             return self.transformation(value)
-        except self.exception_cls as exc:
+        except self.raised_if_invalid as exc:
             raise ValueError(str(exc)) from exc
 
 
 class OneOf(Filter[T]):
-    """Require that the inbound value is one among a given set.
+    """Require that the input value is one among a given set.
 
     Parameters
     ----------
     *values : any
-        values which the inbound value must be one of.
+        values which the input value must be one of.
         Must be hashable since a `set` is built out of
         them for faster `in` lookup.
-    
+
     Example
     -------
     >>> accepted_fruits = OneOf("apple", "orange", "strawberrie")
@@ -153,31 +160,58 @@ class OneOf(Filter[T]):
         return f"expected one of '{values}', got '{value}'"
 
 
-class Mapping(Converter[T, V]):
-    """Map equivalent values to a normalized value.
+class Equiv(Converter[T, V]):
+    """Map input values to equivalents.
+
+    The name ``Equiv`` was chosen to prevent conflicts with ``typing.Mapping``.
 
     Parameters
     ----------
     mapping : dict
-        a dict mapping normalized values to strings that represent them.
+        A mapping of values to their equivalent.
+
+        .. tip::
+            Bulk mapping is supported by using tuples as keys. Then, all values
+            in map to the tuple's equivalent (see the example below).
+
+    Raises
+    ------
+    ``ValueError``:
+        If no equivalent exists for ``value``.
 
     Example
     -------
-    >>> truths = Mapping({True: {"true", "True", "yes", "y", "1"}})
-    >>> truths("true")
+    >>> as_bool = Equiv({
+        # Single mapping
+        "true": True,
+        "True": True,
+        # Bulk mapping
+        ("False", "false"): False,
+    })
+    >>> as_bool("true")
     True
+    >>> as_bool("False")
+    False
     >>> truths("sure")
-    ValueError: 'sure' is not equivalent to any known value
+    ValueError: no equivalent for 'sure'
     """
 
-    def __init__(self, mapping: Dict[V, Set[T]]):
-        self.mapping = mapping
+    def __init__(self, mapping: Dict[Union[T, Tuple[T]], V]):
+        _mapping = {}
+        for key, value in mapping.items():
+            if isinstance(key, tuple):
+                for sub_key in key:
+                    _mapping[sub_key] = value
+                continue
+            _mapping[key] = value
+
+        self.mapping = _mapping
 
     def __call__(self, value: T) -> V:
-        for val, values in self.mapping.items():
-            if value in values:
-                return val
-        raise ValueError(f"'{value}' is not equivalent to any known value")
+        try:
+            return self.mapping[value]
+        except KeyError as exc:
+            raise ValueError(f"no equivalent for '{value}'") from exc
 
 
 class Regex(Converter[str, V]):
@@ -227,7 +261,7 @@ class Regex(Converter[str, V]):
 
 
 class Range(Regex[range]):
-    """Build a Python ``range`` object from the inbound value.
+    """Build a Python ``range`` object from the input value.
 
     Supported formats:
 

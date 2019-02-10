@@ -2,7 +2,7 @@ import decimal
 from functools import partial
 from typing import Any, Dict
 
-from .converters import Converter, Filter, Mapping, Range, Transform
+from .converters import Converter, Filter, Equiv, Range, Transform
 
 ALIASES: Dict[Any, Converter] = {
     # `str` filters
@@ -16,16 +16,16 @@ ALIASES: Dict[Any, Converter] = {
     bin: Transform(partial(int, base=2)),
     oct: Transform(partial(int, base=8)),
     decimal.Decimal: Transform(
-        decimal.Decimal, exception_cls=decimal.InvalidOperation
+        decimal.Decimal, raised_if_invalid=decimal.InvalidOperation
     ),
-    # Mappings
-    bool: Mapping(
+    # Equivalents
+    bool: Equiv(
         {
             True: {"true", "True", "yes", "y", "1"},
             False: {"false", "False", "no", "n", "0"},
         }
     ),
-    None: Mapping({None: {"null", "none"}}),
+    None: Equiv({None: {"null", "none"}}),
     # Other
     range: Range(),
 }
