@@ -7,6 +7,7 @@ verify_ssl = true
 pylint = "*"
 rope = "*"
 mypy = "*"
+sphinx = "*"
 
 [packages]
 colon = {editable = true,path = "."}
