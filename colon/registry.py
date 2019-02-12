@@ -1,9 +1,10 @@
 from functools import reduce
-from typing import Any, Callable, Dict, Hashable, List, Union
+from typing import Any, Dict, Hashable, List, Union, TypeVar
 
 from .aliases import ALIASES
 from .converters import Converter, Transform
-from .typevars import T, V
+
+T = TypeVar("T")
 
 
 class Registry:
@@ -24,11 +25,11 @@ class Registry:
         """
         registry = cls()
         for alias, converter in ALIASES.items():
-            registry.register(alias, converter)
+            registry.alias(alias, converter)
         return registry
 
-    def register(self, alias: Hashable, converter: Converter):
-        """Register a new alias.
+    def alias(self, alias: Hashable, converter: Converter):
+        """Register a new converter alias.
 
         Parameters
         ----------
@@ -37,39 +38,33 @@ class Registry:
         """
         self._aliases[alias] = converter
 
-    def get(self, annotation: Union[Callable[[T], V], Any]) -> Converter[T, V]:
-        """Retrieve a converter.
-
-        If no converter is aliased from `annotation`, the annotation itself is
-        used to build a ``Transform`` converter.
+    def get(self, alias: T) -> Union[Converter, T]:
+        """Retrieve a converter by alias.
 
         Parameters
         ----------
-        annotation : callable or alias
+        alias : hashable
 
         Returns
         -------
-        converter : Converter
+        converter : Converter or None
+            This is `None` if no converter is registered for `alias`.
         """
-        try:
-            return self._aliases[annotation]
-        except KeyError:
-            return Transform(annotation)
+        return self._aliases.get(alias, alias)
 
-    def chain(self, *args: Union[Converter, Any]) -> Converter:
+    def chain(self, *args: Union[Converter, Any]) -> Transform:
         """Build a chain converter from multiple converters.
 
         The input converters can also be given by alias.
 
         Parameters
         ----------
-        *args: converter or any
+        *args: converter or alias
 
         Returns
         -------
-        chained : Converter
+        chained : Transform
         """
-
         converters: List[Converter] = [self.get(arg) for arg in args]
 
         def convert(value: str) -> Any:
