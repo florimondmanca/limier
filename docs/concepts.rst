@@ -24,20 +24,20 @@ value, attempt to convert it and raise a `ValueError` if this process fails.
 The power of Deduce lies in building upon these built-in converters while
 providing building blocks for custom and/or more complex converters.
 
-Aliases
--------
+Clues
+-----
 
 Many Python built-ins naturally map to a type of converter among those defined
 above. For example, `str.islower` naturally maps to `Filter(str.islower)`,
 and `bool` maps to a `Equiv` that would map `"true"` and `"True"` to `True`
 as well as `"false"` and `"False"` to `False`.
 
-For this reason, Deduce has a notion of **converter alias** which allows to use
-the Python built-in instead of the actual `Converter` object. This makes for a
-cleaner, more transparent and more pythonic API.
+For this reason, **clues** make the detective aware about the Python built-ins,
+which saves us from annotating parameters using the actual ``Converter``
+objects. This makes for a cleaner and more pythonic API.
 
-For example, `None` is aliased an `Equiv` that makes the following two snippets
-equivalent:
+For example, `None` is a clue for an `Equiv` that makes
+the following two snippets equivalent:
 
 .. code-block:: python
 
@@ -55,17 +55,18 @@ equivalent:
     def foo(x: None):
         pass
 
-You can retrieve the actual `Converter` object from the alias using
-`deduce.get`, which returns the alias itself if not converter was found:
+You can retrieve the actual `Converter` object from the clue using
+`deduce.retrieve`, which returns the clue itself if the detective has no
+record for it:
 
 .. code-block:: python
 
     >>> import deduce
-    >>> islower = deduce.get(str.islower)
+    >>> islower = deduce.retrieve(str.islower)
     >>> assert isinstance(islower, deduce.Filter)
-    >>> assert deduce.get("foo") == "foo"
+    >>> assert deduce.retrieve("foo") == "foo"
 
-Lastly, you can define your own aliases using `deduce.alias`:
+Lastly, you can record your own clues using `deduce.record`:
 
 .. code-block:: python
 
@@ -74,15 +75,15 @@ Lastly, you can define your own aliases using `deduce.alias`:
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 
-    deduce.alias("foo", with_foo)
-    assert deduce.get("foo") == with_foo
-    assert deduce.get("foo")("bar") == "Foo: bar"
+    deduce.record("foo", with_foo)
+    assert deduce.retrieve("foo") == with_foo
+    assert deduce.retrieve("foo")("bar") == "Foo: bar"
 
 A decorator syntax is also available:
 
 .. code-block:: python
 
-    @deduce.alias("foo")
+    @deduce.clue("foo")
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 

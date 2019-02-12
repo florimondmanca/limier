@@ -13,7 +13,7 @@ from typing import (
 )
 
 from .converters import Converter
-from .knowledge import Brain
+from .clues import Detective
 from .typevars import V
 from .exceptions import ConversionError
 
@@ -42,21 +42,25 @@ class deduce(
     Parameters
     ----------
     func : callable
-    brain : Brain, optional
-        A `Brain` from which converters are obtained.
-        Defaults to the default brain.
+    detective : Detective, optional
+        A ``Detective`` object which has clues about which converters are
+        available. Defaults to ``Detective.default``.
 
     Returns
     -------
     deduced : callable
-        Wrapper of `func` that applies converters to positional and keyword
+        Wrapper of ``func`` that applies converters to positional and keyword
         parameters that have a type annotation.
     """
 
-    def __init__(self, func: Callable[..., V], brain: Optional[Brain] = None):
+    def __init__(
+        self, func: Callable[..., V], detective: Optional[Detective] = None
+    ):
         self.func = func
         self.params = signature(func).parameters
-        self.brain: Brain = brain if brain is not None else Brain.default()
+        self.detective: Detective = (
+            detective if detective is not None else Detective.default()
+        )
         self.positional_converters: List[Tuple[str, Converter]] = []
         self.keyword_converters: Dict[str, Converter] = defaultdict(
             # Default to `identity` so that given kwargs that are not expected
@@ -84,14 +88,14 @@ class deduce(
             converter = (
                 Converter.identity
                 if param.annotation is Parameter.empty
-                else self.brain.which(param.annotation)
+                else self.detective.retrieve(param.annotation)
             )
             self.positional_converters.append((name, converter))
 
     def _build_keyword_converters(self):
         for name, param in self._optional_params.items():
             if param.annotation is not Parameter.empty:
-                self.keyword_converters[name] = self.brain.which(
+                self.keyword_converters[name] = self.detective.retrieve(
                     param.annotation
                 )
 

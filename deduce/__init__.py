@@ -1,14 +1,14 @@
 from .converters import *
 from .decorators import deduce
 from .exceptions import ConversionError
-from .knowledge import Brain
+from .clues import Detective
 
 __version__ = "0.0.0"
 
-_BRAIN = Brain.default()
+_DETECTIVE = Detective.default()
 
 # Pre-bound methods
 # pylint: disable=invalid-name
-learn = _BRAIN.learn
-which = _BRAIN.which
-chain = _BRAIN.chain
+record = _DETECTIVE.record
+retrieve = _DETECTIVE.retrieve
+chain = _DETECTIVE.chain

@@ -10,7 +10,7 @@ Initial release.
 
 ### Added
 
-- Main API: `Deducer`, `deduce`
-- Generic converters: `Identity`, `Transform`, `Filter`, `Equiv`, `OneOf`, `Regex`, `Range`
-- Aliases: built-in aliases, `deduce.learn`, `deduce.which`.
+- Main API: `deduce`.
+- Generic converters: `Identity`, `Transform`, `Filter`, `Equiv`, `OneOf`, `Regex`, `Range`.
+- Clues: built-in clues, `Detective`, `.record`, `.retrieve`, `.chain`.
 - Changelog.
