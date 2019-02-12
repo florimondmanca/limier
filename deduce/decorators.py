@@ -1,7 +1,16 @@
 from collections import OrderedDict, defaultdict
 from functools import update_wrapper
 from inspect import Parameter, signature
-from typing import Callable, Dict, List, Mapping, Optional, Tuple, Iterator
+from typing import (
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Iterator,
+    Generic,
+)
 
 from .converters import Converter
 from .knowledge import Brain
@@ -25,26 +34,29 @@ def _filter(
     )
 
 
-class punctuate:  # pylint: disable=invalid-name
-    """Build a punctuated version of a function.
+class deduce(
+    Generic[V]
+):  # pylint: disable=invalid-name, unsubscriptable-object
+    """Build a deduced version of a function.
 
     Parameters
     ----------
     func : callable
     brain : Brain, optional
-        A `Brain` object. Defaults to the default brain.
+        A `Brain` from which converters are obtained.
+        Defaults to the default brain.
 
     Returns
     -------
-    punctuated : callable
-        Wrapper of `func` that applies converters to arguments and
-        keyword arguments that have a type annotation.
+    deduced : callable
+        Wrapper of `func` that applies converters to positional and keyword
+        parameters that have a type annotation.
     """
 
     def __init__(self, func: Callable[..., V], brain: Optional[Brain] = None):
         self.func = func
         self.params = signature(func).parameters
-        self.brain = brain if brain is not None else Brain.default()
+        self.brain: Brain = brain if brain is not None else Brain.default()
         self.positional_converters: List[Tuple[str, Converter]] = []
         self.keyword_converters: Dict[str, Converter] = defaultdict(
             # Default to `identity` so that given kwargs that are not expected
@@ -72,14 +84,16 @@ class punctuate:  # pylint: disable=invalid-name
             converter = (
                 Converter.identity
                 if param.annotation is Parameter.empty
-                else self.brain.get(param.annotation)
+                else self.brain.which(param.annotation)
             )
             self.positional_converters.append((name, converter))
 
     def _build_keyword_converters(self):
         for name, param in self._optional_params.items():
             if param.annotation is not Parameter.empty:
-                self.keyword_converters[name] = self.brain.get(param.annotation)
+                self.keyword_converters[name] = self.brain.which(
+                    param.annotation
+                )
 
     def convert(self, args: tuple, kwargs: dict) -> Tuple[tuple, dict]:
         errors: Dict[str, str] = {}

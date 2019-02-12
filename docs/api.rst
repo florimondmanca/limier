@@ -1,10 +1,10 @@
 API Reference
 =============
 
-Deduce
-------
+Decorators
+-----------
 
-.. automodule:: deduce
+.. automodule:: deduce.decorators
     :members:
 
 Converters

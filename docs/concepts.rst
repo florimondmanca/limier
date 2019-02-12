@@ -41,17 +41,17 @@ equivalent:
 
 .. code-block:: python
 
-    from deduce import punctuate, Equiv
+    from deduce import deduce, Equiv
 
-    @punctuate
+    @deduce
     def foo(x: Equiv({("null", "none", "None"): None})):
         pass
 
 .. code-block:: python
 
-    from deduce import punctuate
+    from deduce import deduce
 
-    @punctuate
+    @deduce
     def foo(x: None):
         pass
 
@@ -86,14 +86,14 @@ A decorator syntax is also available:
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 
-Punctuation
------------
+Deduction
+---------
 
-**Punctuation** is the process of attaching converters to the parameters of
+**Deduction** is the process of attaching converters to the parameters of
 a function. Deduce does this by processing the function's signature,
 looking for type annotations declared on its parameters.
 
-When the punctuated function is called, each argument is transformed using
+When the deducted function is called, each argument is transformed using
 the registered converter. If the corresponding parameter was not annotated,
 the value is passed unchanged (using the `Identity` converter).
 
@@ -102,13 +102,13 @@ All conversion failures
 if any, are collected and bundled in a `deduce.ConversionError` and
 accessible on its `.errors` attribute.
 
-In practice, you can punctuate a function using `deduce.punctuate`:
+In practice, you can deduct a function using `deduce.deduce`:
 
 .. code-block:: python
 
-    from deduce import punctuate
+    from deduce import deduce
 
-    @punctuate
+    @deduce
     def add(x: int, y: int):
         return x + y
 
@@ -128,15 +128,15 @@ a `deduce.ConversionError` is raised:
     >>> add("foo", "2")
     ConversionError: {"x": "invalid literal for int() with base 10: 'foo'"}
 
-Finally, since `punctuate` is a decorator, it can also be used as a
+Finally, since `deduce` is a decorator, it can also be used as a
 regular function:
 
 .. code-block:: python
 
     from typing import Callable
 
-    from deduce import punctuate
+    from deduce import deduce
 
     def do_stuff(func: Callable):
-        punctuated = punctuate(func)
-        # Do something with the punctuated function…
+        deducted = deduce(func)
+        # Do something with the deducted function…

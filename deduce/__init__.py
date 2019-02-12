@@ -1,6 +1,7 @@
 from .converters import *
+from .decorators import deduce
+from .exceptions import ConversionError
 from .knowledge import Brain
-from .punctuate import punctuate, ConversionError
 
 __version__ = "0.0.0"
 

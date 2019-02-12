@@ -93,7 +93,7 @@ class Brain:
         -------
         chained : Transform
         """
-        converters: List[Converter] = [self.get(arg) for arg in args]
+        converters: List[Converter] = [self.which(arg) for arg in args]
 
         def convert(value: str) -> Any:
             return reduce(

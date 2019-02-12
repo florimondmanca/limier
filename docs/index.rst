@@ -4,13 +4,13 @@
    contain the root `toctree` directive.
 
 Deduce
-=======
+======
 
 .. code-block:: python
 
-    from deduce import punctuate, chain
+    from deduce import deduce, chain
 
-    # Custom converter: validate that the input value is positive
+    # Custom converter: validate that the input value is positive.
     def positive(value: int) -> int:
         if value < 0:
             raise ValueError("Expected positive value")
@@ -20,8 +20,7 @@ Deduce
     # Here, we chain two converters together.
     positive_int = chain(int, positive)
 
-    # Punctuated function: converts inputs using the type annotation.
-    @punctuate
+    @deduce
     def compute(x: int, times: positive_int) -> float:
         return x * times
 

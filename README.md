@@ -15,7 +15,7 @@ pip install deduce
 ## Basic usage
 
 ```python
-from deduce import punctuate, chain
+from deduce import deduce, chain
 
 # Custom converter: validate that the input value is positive
 def positive(value: int) -> int:
@@ -23,13 +23,8 @@ def positive(value: int) -> int:
         raise ValueError("Expected positive value")
     return value
 
-# Building custom converters is easy!
-# Here, we chain two converters together.
-positive_int = chain(int, positive)
-
-# Punctuated function: converts inputs using the type annotation.
-@punctuate
-def compute(x: int, times: positive_int) -> float:
+@deduce
+def compute(x: int, times: chain(int, positive)) -> float:
     return x * times
 
 result = compute("2", times="2.5")

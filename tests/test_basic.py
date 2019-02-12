@@ -1,9 +1,9 @@
 import pytest
-from deduce import punctuate, ConversionError
+from deduce import deduce, ConversionError
 
 
 def test_basic():
-    @punctuate
+    @deduce
     def add(x: int, y: int = 0) -> int:
         return x + y
 
