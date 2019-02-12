@@ -1,18 +1,17 @@
 import pytest
-from colon import punctuate
+from colon import punctuate, ConversionError
 
 
 def test_basic():
+    @punctuate
     def add(x: int, y: int = 0) -> int:
         return x + y
-
-    add = punctuate(add)
 
     assert add(1, 2) == 3
     assert add("1", "2") == 3
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ConversionError) as ctx:
         add("0.1", 2)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ConversionError):
         add("foo", 2)
