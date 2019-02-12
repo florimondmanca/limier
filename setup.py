@@ -33,7 +33,7 @@ setup(
     ),
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/bocadilloproject/limier",
+    url="https://github.com/florimondmanca/limier",
     packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
     include_package_data=True,
     keywords=[],
