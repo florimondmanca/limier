@@ -27,7 +27,7 @@ setup(
     version=get_version(),
     author="Florimond Manca",
     author_email="florimond.manca@gmail.com",
-    description="Type hints-powered conversion",
+    description="String conversion and validation powered by type annotations",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/bocadilloproject/colon",
