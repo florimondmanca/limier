@@ -3,7 +3,7 @@ from .decorators import deduce
 from .exceptions import ConversionError
 from .clues import Detective
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 
 _DETECTIVE = Detective.default()
 
