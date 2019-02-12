@@ -13,14 +13,14 @@ Converters
 .. automodule:: deduce.converters
     :members:
 
-Registry
---------
+Knowledge
+---------
 
-.. automodule:: deduce.registry
+.. automodule:: deduce.knowledge
     :members:
 
-Aliases
--------
+Exceptions
+----------
 
-.. automodule:: deduce.aliases
+.. automodule:: deduce.exceptions
     :members:

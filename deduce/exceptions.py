@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 class ConversionError(Exception):
     def __init__(self, **errors):
         super().__init__()

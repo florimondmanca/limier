@@ -4,7 +4,7 @@ from inspect import Parameter, signature
 from typing import Callable, Dict, List, Mapping, Optional, Tuple, Iterator
 
 from .converters import Converter
-from .registry import Registry
+from .knowledge import Brain
 from .typevars import V
 from .exceptions import ConversionError
 
@@ -31,8 +31,8 @@ class punctuate:  # pylint: disable=invalid-name
     Parameters
     ----------
     func : callable
-    registry : Registry, optional
-        A `Registry` object. Defaults to the default registry.
+    brain : Brain, optional
+        A `Brain` object. Defaults to the default brain.
 
     Returns
     -------
@@ -41,12 +41,10 @@ class punctuate:  # pylint: disable=invalid-name
         keyword arguments that have a type annotation.
     """
 
-    def __init__(
-        self, func: Callable[..., V], registry: Optional[Registry] = None
-    ):
+    def __init__(self, func: Callable[..., V], brain: Optional[Brain] = None):
         self.func = func
         self.params = signature(func).parameters
-        self.registry = registry if registry is not None else Registry.default()
+        self.brain = brain if brain is not None else Brain.default()
         self.positional_converters: List[Tuple[str, Converter]] = []
         self.keyword_converters: Dict[str, Converter] = defaultdict(
             # Default to `identity` so that given kwargs that are not expected
@@ -74,16 +72,14 @@ class punctuate:  # pylint: disable=invalid-name
             converter = (
                 Converter.identity
                 if param.annotation is Parameter.empty
-                else self.registry.get(param.annotation)
+                else self.brain.get(param.annotation)
             )
             self.positional_converters.append((name, converter))
 
     def _build_keyword_converters(self):
         for name, param in self._optional_params.items():
             if param.annotation is not Parameter.empty:
-                self.keyword_converters[name] = self.registry.get(
-                    param.annotation
-                )
+                self.keyword_converters[name] = self.brain.get(param.annotation)
 
     def convert(self, args: tuple, kwargs: dict) -> Tuple[tuple, dict]:
         errors: Dict[str, str] = {}
