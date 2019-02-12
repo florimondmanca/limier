@@ -12,12 +12,6 @@ Colon is released to PyPI and can be installed using `pip`:
 pip install colon
 ```
 
-```python
-@api.route("/{id}")
-async def myview(req, res, id: int):
-    pass
-```
-
 ## Basic usage
 
 ```python
