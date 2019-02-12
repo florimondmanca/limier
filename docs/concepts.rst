@@ -4,7 +4,7 @@ Concepts
 Converters
 ----------
 
-Colon relies on **converters**, i.e. functions that take a value
+Deduce relies on **converters**, i.e. functions that take a value
 (generally a string, although this is not mendatory) and return another value,
 raising a `ValueError` in case the input value is invalid.
 
@@ -21,7 +21,7 @@ Using this definition, the Python language actually has many built-in
 converters: `int`, `float`, `str`, and others are all functions that take a
 value, attempt to convert it and raise a `ValueError` if this process fails.
 
-The power of Colon lies in building upon these built-in converters while
+The power of Deduce lies in building upon these built-in converters while
 providing building blocks for custom and/or more complex converters.
 
 Aliases
@@ -32,7 +32,7 @@ above. For example, `str.islower` naturally maps to `Filter(str.islower)`,
 and `bool` maps to a `Equiv` that would map `"true"` and `"True"` to `True`
 as well as `"false"` and `"False"` to `False`.
 
-For this reason, Colon has a notion of **converter alias** which allows to use
+For this reason, Deduce has a notion of **converter alias** which allows to use
 the Python built-in instead of the actual `Converter` object. This makes for a
 cleaner, more transparent and more pythonic API.
 
@@ -41,7 +41,7 @@ equivalent:
 
 .. code-block:: python
 
-    from colon import punctuate, Equiv
+    from deduce import punctuate, Equiv
 
     @punctuate
     def foo(x: Equiv({("null", "none", "None"): None})):
@@ -49,40 +49,40 @@ equivalent:
 
 .. code-block:: python
 
-    from colon import punctuate
+    from deduce import punctuate
 
     @punctuate
     def foo(x: None):
         pass
 
 You can retrieve the actual `Converter` object from the alias using
-`colon.get`, which returns the alias itself if not converter was found:
+`deduce.get`, which returns the alias itself if not converter was found:
 
 .. code-block:: python
 
-    >>> import colon
-    >>> islower = colon.get(str.islower)
-    >>> assert isinstance(islower, colon.Filter)
-    >>> assert colon.get("foo") == "foo"
+    >>> import deduce
+    >>> islower = deduce.get(str.islower)
+    >>> assert isinstance(islower, deduce.Filter)
+    >>> assert deduce.get("foo") == "foo"
 
-Lastly, you can define your own aliases using `colon.alias`:
+Lastly, you can define your own aliases using `deduce.alias`:
 
 .. code-block:: python
 
-    import colon
+    import deduce
 
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 
-    colon.alias("foo", with_foo)
-    assert colon.get("foo") == with_foo
-    assert colon.get("foo")("bar") == "Foo: bar"
+    deduce.alias("foo", with_foo)
+    assert deduce.get("foo") == with_foo
+    assert deduce.get("foo")("bar") == "Foo: bar"
 
 A decorator syntax is also available:
 
 .. code-block:: python
 
-    @colon.alias("foo")
+    @deduce.alias("foo")
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 
@@ -90,7 +90,7 @@ Punctuation
 -----------
 
 **Punctuation** is the process of attaching converters to the parameters of
-a function. Colon does this by processing the function's signature,
+a function. Deduce does this by processing the function's signature,
 looking for type annotations declared on its parameters.
 
 When the punctuated function is called, each argument is transformed using
@@ -99,14 +99,14 @@ the value is passed unchanged (using the `Identity` converter).
 
 All conversion failures
 (caused by one or more converters raising a`ValueError`),
-if any, are collected and bundled in a `colon.ConversionError` and
+if any, are collected and bundled in a `deduce.ConversionError` and
 accessible on its `.errors` attribute.
 
-In practice, you can punctuate a function using `colon.punctuate`:
+In practice, you can punctuate a function using `deduce.punctuate`:
 
 .. code-block:: python
 
-    from colon import punctuate
+    from deduce import punctuate
 
     @punctuate
     def add(x: int, y: int):
@@ -121,7 +121,7 @@ of `add` are converted to integers, which means we can call `add` like so:
     3
 
 If `x` is given a value that cannot be converted to an integer,
-a `colon.ConversionError` is raised:
+a `deduce.ConversionError` is raised:
 
 .. code-block:: python
 
@@ -135,7 +135,7 @@ regular function:
 
     from typing import Callable
 
-    from colon import punctuate
+    from deduce import punctuate
 
     def do_stuff(func: Callable):
         punctuated = punctuate(func)

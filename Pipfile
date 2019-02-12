@@ -11,7 +11,7 @@ sphinx = "*"
 pytest = "*"
 
 [packages]
-colon = {editable = true,path = "."}
+deduce = {editable = true,path = "."}
 
 [requires]
 python_version = "3.7"

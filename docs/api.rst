@@ -1,26 +1,26 @@
 API Reference
 =============
 
-Colon
------
+Deduce
+------
 
-.. automodule:: colon
+.. automodule:: deduce
     :members:
 
 Converters
 ----------
 
-.. automodule:: colon.converters
+.. automodule:: deduce.converters
     :members:
 
 Registry
 --------
 
-.. automodule:: colon.registry
+.. automodule:: deduce.registry
     :members:
 
 Aliases
 -------
 
-.. automodule:: colon.aliases
+.. automodule:: deduce.aliases
     :members:

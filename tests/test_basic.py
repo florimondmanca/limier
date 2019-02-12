@@ -1,5 +1,5 @@
 import pytest
-from colon import punctuate, ConversionError
+from deduce import punctuate, ConversionError
 
 
 def test_basic():
@@ -10,7 +10,7 @@ def test_basic():
     assert add(1, 2) == 3
     assert add("1", "2") == 3
 
-    with pytest.raises(ConversionError) as ctx:
+    with pytest.raises(ConversionError):
         add("0.1", 2)
 
     with pytest.raises(ConversionError):

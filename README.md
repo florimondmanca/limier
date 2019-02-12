@@ -1,21 +1,21 @@
-# Colon
+# Deduce
 
-Colon is a conversion and validation toolkit powered by type annotations.
+Deduce is a smart Python conversion and validation toolkit powered by type annotations.
 
 It is especially handy to automatically cast parameters passed to functions. A typical use case is processing route parameters in the context of web routing.
 
 ## Install
 
-Colon is released to PyPI and can be installed using `pip`:
+Deduce is released to PyPI and can be installed using `pip`:
 
 ```bash
-pip install colon
+pip install deduce
 ```
 
 ## Basic usage
 
 ```python
-from colon import punctuate, chain
+from deduce import punctuate, chain
 
 # Custom converter: validate that the input value is positive
 def positive(value: int) -> int:
