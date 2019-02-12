@@ -9,9 +9,7 @@ rope = "*"
 mypy = "*"
 sphinx = "*"
 pytest = "*"
-
-[packages]
-deduce = {editable = true,path = "."}
+doc8 = "*"
 
 [requires]
 python_version = "3.7"

@@ -16,7 +16,7 @@ with open(os.path.join(CURDIR, "README.md"), "r") as f:
 
 def get_version() -> str:
     _version_re = re.compile(r"__version__\s+=\s+(?P<version>.*)")
-    with open(os.path.join(CURDIR, "deduce", "__init__.py"), "r") as init:
+    with open(os.path.join(CURDIR, "limier", "__init__.py"), "r") as init:
         match = _version_re.search(init.read())
         assert match is not None
         version = match.group("version")
@@ -24,7 +24,7 @@ def get_version() -> str:
 
 
 setup(
-    name="deduce",
+    name="limier",
     version=get_version(),
     author="Florimond Manca",
     author_email="florimond.manca@gmail.com",
@@ -33,7 +33,7 @@ setup(
     ),
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/bocadilloproject/deduce",
+    url="https://github.com/bocadilloproject/limier",
     packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
     include_package_data=True,
     keywords=[],

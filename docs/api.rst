@@ -4,23 +4,23 @@ API Reference
 Decorators
 -----------
 
-.. automodule:: deduce.decorators
+.. automodule:: limier.decorators
     :members:
 
 Converters
 ----------
 
-.. automodule:: deduce.converters
+.. automodule:: limier.converters
     :members:
 
-Knowledge
----------
+Clues
+-----
 
-.. automodule:: deduce.knowledge
+.. automodule:: limier.clues
     :members:
 
 Exceptions
 ----------
 
-.. automodule:: deduce.exceptions
+.. automodule:: limier.exceptions
     :members:

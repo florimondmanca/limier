@@ -4,7 +4,7 @@ Concepts
 Converters
 ----------
 
-Deduce relies on **converters**, i.e. functions that take a value
+Limier relies on **converters**, i.e. functions that take a value
 (generally a string, although this is not mendatory) and return another value,
 raising a `ValueError` in case the input value is invalid.
 
@@ -21,7 +21,7 @@ Using this definition, the Python language actually has many built-in
 converters: `int`, `float`, `str`, and others are all functions that take a
 value, attempt to convert it and raise a `ValueError` if this process fails.
 
-The power of Deduce lies in building upon these built-in converters while
+The power of Limier lies in building upon these built-in converters while
 providing building blocks for custom and/or more complex converters.
 
 Clues
@@ -41,7 +41,7 @@ the following two snippets equivalent:
 
 .. code-block:: python
 
-    from deduce import deduce, Equiv
+    from limier import deduce, Equiv
 
     @deduce
     def foo(x: Equiv({("null", "none", "None"): None})):
@@ -49,41 +49,41 @@ the following two snippets equivalent:
 
 .. code-block:: python
 
-    from deduce import deduce
+    from limier import deduce
 
     @deduce
     def foo(x: None):
         pass
 
 You can retrieve the actual `Converter` object from the clue using
-`deduce.retrieve`, which returns the clue itself if the detective has no
+`limier.retrieve`, which returns the clue itself if the detective has no
 record for it:
 
 .. code-block:: python
 
-    >>> import deduce
-    >>> islower = deduce.retrieve(str.islower)
+    >>> import limier
+    >>> islower = limier.retrieve(str.islower)
     >>> assert isinstance(islower, deduce.Filter)
-    >>> assert deduce.retrieve("foo") == "foo"
+    >>> assert limier.retrieve("foo") == "foo"
 
-Lastly, you can record your own clues using `deduce.record`:
+Lastly, you can record your own clues using `limier.record`:
 
 .. code-block:: python
 
-    import deduce
+    import limier
 
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 
-    deduce.record("foo", with_foo)
-    assert deduce.retrieve("foo") == with_foo
-    assert deduce.retrieve("foo")("bar") == "Foo: bar"
+    limier.record("foo", with_foo)
+    assert limier.retrieve("foo") == with_foo
+    assert limier.retrieve("foo")("bar") == "Foo: bar"
 
-A decorator syntax is also available:
+A decorator syntax is also available in the form of `limier.clue`:
 
 .. code-block:: python
 
-    @deduce.clue("foo")
+    @limier.clue("foo")
     def with_foo(value: str) -> str:
         return f"Foo: {value}"
 
@@ -91,23 +91,23 @@ Deduction
 ---------
 
 **Deduction** is the process of attaching converters to the parameters of
-a function. Deduce does this by processing the function's signature,
+a function. Limier does this by processing the function's signature,
 looking for type annotations declared on its parameters.
 
-When the deducted function is called, each argument is transformed using
+When the deduced function is called, each argument is transformed using
 the registered converter. If the corresponding parameter was not annotated,
 the value is passed unchanged (using the `Identity` converter).
 
 All conversion failures
 (caused by one or more converters raising a`ValueError`),
-if any, are collected and bundled in a `deduce.ConversionError` and
+if any, are collected and bundled in a `limier.ConversionError` and
 accessible on its `.errors` attribute.
 
-In practice, you can deduct a function using `deduce.deduce`:
+In practice, you can deduce a function using `limier.deduce`:
 
 .. code-block:: python
 
-    from deduce import deduce
+    from limier import deduce
 
     @deduce
     def add(x: int, y: int):
@@ -122,7 +122,7 @@ of `add` are converted to integers, which means we can call `add` like so:
     3
 
 If `x` is given a value that cannot be converted to an integer,
-a `deduce.ConversionError` is raised:
+a `limier.ConversionError` is raised:
 
 .. code-block:: python
 
@@ -136,8 +136,8 @@ regular function:
 
     from typing import Callable
 
-    from deduce import deduce
+    from limier import deduce
 
     def do_stuff(func: Callable):
-        deducted = deduce(func)
-        # Do something with the deducted function…
+        deduced = deduce(func)
+        # Do something with the deduced function…

@@ -10,7 +10,7 @@ Initial release.
 
 ### Added
 
-- Main API: `deduce`.
+- Main API: `limier.deduce`.
 - Generic converters: `Identity`, `Transform`, `Filter`, `Equiv`, `OneOf`, `Regex`, `Range`.
-- Clues: built-in clues, `Detective`, `.record`, `.retrieve`, `.chain`.
+- Clues: built-in clues, `Detective`, `.record`, `.clue`, `.retrieve`, `.chain`.
 - Changelog.

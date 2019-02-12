@@ -1,21 +1,21 @@
-# Deduce
+# Limier
 
-Deduce is a smart Python conversion and validation toolkit powered by type annotations.
+Limier is a smart Python conversion and validation toolkit powered by type annotations.
 
 It is especially handy to automatically cast parameters passed to functions. A typical use case is processing route parameters in the context of web routing.
 
 ## Install
 
-Deduce is released to PyPI and can be installed using `pip`:
+Limier is released to PyPI and can be installed using `pip`:
 
 ```bash
-pip install deduce
+pip install limier
 ```
 
 ## Basic usage
 
 ```python
-from deduce import deduce, chain
+from limier import deduce, chain
 
 # Custom converter: validate that the input value is positive
 def positive(value: int) -> int:

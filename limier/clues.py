@@ -69,6 +69,20 @@ class Detective:
         """
         self._records[clue] = converter
 
+    def clue(self, clue: Hashable):
+        """Record a clue about the decorated converter.
+
+        See Also
+        --------
+        record
+        """
+
+        def decorate(func):
+            self.record(clue, func)
+            return func
+
+        return decorate
+
     def retrieve(self, clue: T) -> Union[Converter, T]:
         """Retrieve the converter that corresponds to a clue.
 

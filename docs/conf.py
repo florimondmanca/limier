@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "Deduce"
+project = "Limier"
 copyright = "2019, Florimond Manca"
 author = "Florimond Manca"
 
@@ -106,7 +106,7 @@ html_static_path = ["_static"]
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "deducedoc"
+htmlhelp_basename = "limierdoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -132,8 +132,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "Deduce.tex",
-        "Deduce Documentation",
+        "Limier.tex",
+        "Limier Documentation",
         "Florimond Manca",
         "manual",
     )
@@ -144,7 +144,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "deduce", "Deduce Documentation", [author], 1)]
+man_pages = [(master_doc, "limier", "Limier Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -155,10 +155,10 @@ man_pages = [(master_doc, "deduce", "Deduce Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "Deduce",
-        "Deduce Documentation",
+        "Limier",
+        "Limier Documentation",
         author,
-        "Deduce",
+        "Limier",
         "One line description of project.",
         "Miscellaneous",
     )

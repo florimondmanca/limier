@@ -1,5 +1,5 @@
 import pytest
-from deduce import deduce, ConversionError
+from limier import deduce, ConversionError
 
 
 def test_basic():
