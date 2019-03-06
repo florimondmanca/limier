@@ -3,22 +3,22 @@ from inspect import Parameter, signature
 from typing import Callable, Mapping
 
 from .converters import Converter
-from .clues import Detective
+from .registry import Registry
 from .typevars import V
 from .exceptions import ConversionError
 
 
 def deduce(
-    func: Callable[..., V], detective: Detective = None
+    func: Callable[..., V], registry: Registry = None
 ) -> Callable[..., V]:
     """Build a deduced version of a function.
 
     Parameters
     ----------
     func : callable
-    detective : Detective, optional
-        A ``Detective`` object which has clues about which converters are
-        available. Defaults to ``Detective.default``.
+    registry : Registry, optional
+        A ``Registry`` object which has aliases to available converters.
+        Defaults to ``Registry.default``.
 
     Returns
     -------
@@ -27,11 +27,11 @@ def deduce(
         that have a type annotation.
     """
     sig = signature(func)
-    if detective is None:
-        detective = Detective.default()
+    if registry is None:
+        registry = Registry.default()
 
     converters: Mapping[str, Converter] = {
-        name: detective.retrieve(param.annotation)
+        name: registry.get(param.annotation) or param.annotation
         for name, param in sig.parameters.items()
         if param.annotation is not Parameter.empty
     }

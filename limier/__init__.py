@@ -1,14 +1,15 @@
 from .converters import *
 from .decorators import deduce
 from .exceptions import ConversionError
-from .clues import Detective
+from .registry import Registry
 
 __version__ = "0.0.1"
 
-_DETECTIVE = Detective.default()
+_REGISTRY = Registry.default()
 
 # Pre-bound methods
 # pylint: disable=invalid-name
-record = _DETECTIVE.record
-retrieve = _DETECTIVE.retrieve
-chain = _DETECTIVE.chain
+add = _REGISTRY.add
+alias = _REGISTRY.alias
+get = _REGISTRY.get
+chain = _REGISTRY.chain

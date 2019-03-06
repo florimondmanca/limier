@@ -2,7 +2,7 @@ API Reference
 =============
 
 Decorators
------------
+----------
 
 .. automodule:: limier.decorators
     :members:
@@ -13,11 +13,18 @@ Converters
 .. automodule:: limier.converters
     :members:
 
-Clues
------
+Aliases
+-------
 
-.. automodule:: limier.clues
+.. automodule:: limier.registry
     :members:
+
+Registry
+--------
+
+.. automodule:: limier.registry
+    :members:
+
 
 Exceptions
 ----------
