@@ -9,7 +9,6 @@ _REGISTRY = Registry.default()
 
 # Pre-bound methods
 # pylint: disable=invalid-name
-add = _REGISTRY.add
-alias = _REGISTRY.alias
+converter = _REGISTRY.converter
 get = _REGISTRY.get
 chain = _REGISTRY.chain

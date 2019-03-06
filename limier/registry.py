@@ -1,8 +1,11 @@
-from functools import reduce
-from typing import Any, Dict, Hashable, List, Union, Optional
+from functools import reduce, partial
+from typing import Any, Dict, Hashable, List, Union, Callable
 
 from .aliases import ALIASES
 from .converters import Converter, Transform
+
+
+_UNSPECIFIED = object()
 
 
 class Registry:
@@ -23,35 +26,29 @@ class Registry:
         """
         registry = cls()
         for alias, converter in ALIASES.items():
-            registry.add(alias, converter)
+            registry.converter(converter, alias=alias)
         return registry
 
-    def add(self, alias: Hashable, converter: Converter):
-        """Add a new converter alias.
+    def converter(self, func: Callable = None, alias: Hashable = _UNSPECIFIED):
+        """Add a new converter.
 
-        From then on, the registry will know which converter to use
-        when seeing this alias.
+        This can be used as a decorator or as a regular function.
 
         Parameters
         ----------
-        alias : hashable (str, function, tuple, etc.)
-        converter : Converter
+        func : callable or ``Converter``
+        alias : hashable (str, function, tuple, etc.), optional
+            Defaults to the name of ``func``.
         """
-        self._aliases[alias] = converter
+        if func is None:
+            return partial(self.converter, alias=alias)
 
-    def alias(self, alias: Hashable):
-        """Add a new alias (decorator syntax).
+        if alias is _UNSPECIFIED:
+            alias = func.__name__
 
-        See Also
-        --------
-        add
-        """
+        self._aliases[alias] = func
 
-        def decorate(func):
-            self.add(alias, func)
-            return func
-
-        return decorate
+        return func
 
     def get(self, alias: Hashable) -> Converter:
         """Retrieve the converter that corresponds to an alias.
@@ -68,21 +65,23 @@ class Registry:
         """
         return self._aliases.get(alias, alias)
 
-    def chain(self, *clues_or_converters: Union[Converter, Any]) -> Transform:
+    def chain(
+        self, *aliases_or_converters: Union[Hashable, Converter]
+    ) -> Transform:
         """Chain converters into a single one.
 
-        The input converters can also be given by clue.
+        The input converters can also be given by alias.
 
         Parameters
         ----------
-        *clues_or_converters: clue or converter.
+        *aliases_or_converters: alias or converter.
 
         Returns
         -------
         chained : Transform
         """
         converters: List[Converter] = [
-            self.get(value) for value in clues_or_converters
+            self.get(value) for value in aliases_or_converters
         ]
 
         def convert(value: str) -> Any:
