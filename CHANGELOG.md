@@ -18,4 +18,4 @@ Initial release.
 - Generic converters: `Identity`, `Transform`, `Filter`, `Equiv`, `OneOf`, `Regex`, `Range`.
 - Clue system: built-in clues, `.record`, `.clue`, `.retrieve`, `.chain`.
 
-[Unreleased]: https://github.com/bocadilloproject/bocadillo/compare/v0.0.1...HEAD
+[unreleased]: https://github.com/florimondmanca/limier/compare/v0.0.1...HEAD
