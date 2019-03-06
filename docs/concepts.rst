@@ -95,7 +95,7 @@ looking for type annotations declared on its parameters.
 
 When the deduced function is called, each argument is transformed using
 the registered converter. If the corresponding parameter was not annotated,
-the value is passed unchanged (using the `Identity` converter).
+the value is passed unchanged.
 
 All conversion failures
 (caused by one or more converters raising a`ValueError`),

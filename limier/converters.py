@@ -15,7 +15,6 @@ from .typevars import T, U, V, W  # pylint: disable=unused-import
 
 __all__ = (
     "Converter",
-    "Identity",
     "Filter",
     "Transform",
     "Equiv",
@@ -40,29 +39,8 @@ class Converter(Generic[T, V]):  # pylint: disable=unsubscriptable-object
         Concrete subclasses should implement ``__call__(self, value)``.
     """
 
-    identity: "Identity"
-
     def __call__(self, value: T) -> V:
         raise NotImplementedError
-
-
-class Identity(Converter[T, T]):
-    """The no-op converter that returns what it's given.
-
-    This is typically used as a default when no other converter is available.
-
-    Example
-    -------
-    >>> same = Identity()
-    >>> same("hello")
-    "hello"
-    """
-
-    def __call__(self, value: T) -> T:
-        return value
-
-
-Converter.identity = Identity()
 
 
 class Filter(Converter[T, T]):
