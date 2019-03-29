@@ -1,5 +1,5 @@
 from .converters import *
-from .decorators import deduce
+from .decorators import converted
 from .exceptions import ConversionError
 from .registry import Registry
 

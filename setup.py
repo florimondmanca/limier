@@ -29,7 +29,8 @@ setup(
     author="Florimond Manca",
     author_email="florimond.manca@gmail.com",
     description=(
-        "Smart conversion and validation toolkit powered by type annotations"
+        "Smart toolkit for conversion and validation of function arguments "
+        "powered by type annotations"
     ),
     long_description=README,
     long_description_content_type="text/markdown",

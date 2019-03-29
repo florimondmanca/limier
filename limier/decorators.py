@@ -1,17 +1,15 @@
 from functools import wraps
 from inspect import Parameter, signature
-from typing import Callable, Mapping
+from typing import Mapping
 
 from .converters import Converter
-from .registry import Registry
-from .typevars import V
 from .exceptions import ConversionError
+from .registry import Registry
+from .typevars import T
 
 
-def deduce(
-    func: Callable[..., V], registry: Registry = None
-) -> Callable[..., V]:
-    """Build a deduced version of a function.
+def converted(func: T, registry: Registry = None) -> T:
+    """Wrap a function that applies converters to its arguments.
 
     Parameters
     ----------
@@ -22,13 +20,14 @@ def deduce(
 
     Returns
     -------
-    deduced : callable
+    converted : callable
         Wrapper of ``func`` that applies converters to parameters
         that have a type annotation.
     """
-    sig = signature(func)
     if registry is None:
         registry = Registry.default()
+
+    sig = signature(func)
 
     converters: Mapping[str, Converter] = {
         name: registry.get(param.annotation) or param.annotation

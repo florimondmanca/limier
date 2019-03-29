@@ -1,12 +1,10 @@
 # Limier
 
-Limier is a smart Python conversion and validation toolkit powered by type annotations.
+Limier is a smart toolkit for conversion and validation of function arguments in Python powered by type annotations.
 
-It is especially handy to automatically cast parameters passed to functions. A typical use case is processing route parameters in the context of web routing.
+A typical use case is the conversion of route parameters in the context of web routing.
 
 ## Install
-
-Limier is released to PyPI and can be installed using `pip`:
 
 ```bash
 pip install limier
@@ -15,7 +13,7 @@ pip install limier
 ## Basic usage
 
 ```python
-from limier import deduce, chain
+from limier import converted, chain
 
 # Custom converter: validate that the input value is positive
 def positive(value: int) -> int:
@@ -23,7 +21,7 @@ def positive(value: int) -> int:
         raise ValueError("Expected positive value")
     return value
 
-@deduce
+@converted
 def compute(x: int, times: chain(int, positive)) -> float:
     return x * times
 
