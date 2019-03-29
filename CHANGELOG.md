@@ -6,14 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v0.0.2]
+
+Released: 2019-03-29
+
 ### Changed
 
 - `@deduce` is now `@converted`.
 - Remove metaphors from the internal API: `.converter`, `.get`, `.chain`.
 
-## 0.0.1
+## v0.0.1
 
-Release date: 2019-02-12
+Released: 2019-02-12
 
 Initial release.
 
@@ -23,4 +27,5 @@ Initial release.
 - Generic converters: `Identity`, `Transform`, `Filter`, `Equiv`, `OneOf`, `Regex`, `Range`.
 - Clue system: built-in clues, `.record`, `.clue`, `.retrieve`, `.chain`.
 
-[unreleased]: https://github.com/florimondmanca/limier/compare/v0.0.1...HEAD
+[unreleased]: https://github.com/florimondmanca/limier/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/florimondmanca/limier/compare/v0.0.1...v0.0.1
