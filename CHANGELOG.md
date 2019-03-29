@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- `@deduce` is now `@converted`.
+- Remove metaphors from the internal API: `.converter`, `.get`, `.chain`.
+
 ## 0.0.1
 
 Release date: 2019-02-12
